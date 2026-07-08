@@ -29,11 +29,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if git diff --quiet -- wallpaper.jpg images.json; then
+          git add wallpaper.jpg images.json
+
+          if git diff --cached --quiet; then
             echo "No wallpaper change to commit."
             exit 0
           fi
 
-          git add wallpaper.jpg images.json
           git commit -m "chore: rotate lock wallpaper"
           git push

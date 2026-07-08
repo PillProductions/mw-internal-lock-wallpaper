@@ -34,7 +34,15 @@ def main() -> int:
     manifest_entries = [f"images/{p.name}" for p in sorted(candidates, key=lambda p: p.name)]
     MANIFEST.write_text(json.dumps(manifest_entries, indent=2) + "\n", encoding="utf-8")
 
-    chosen = random.choice(candidates)
+    # Avoid re-picking the currently published image so each run changes visibly.
+    pool = candidates
+    if TARGET.exists() and len(candidates) > 1:
+        current_bytes = TARGET.read_bytes()
+        different = [p for p in candidates if p.read_bytes() != current_bytes]
+        if different:
+            pool = different
+
+    chosen = random.choice(pool)
     shutil.copyfile(chosen, TARGET)
 
     print(f"Selected: {chosen.name}")
