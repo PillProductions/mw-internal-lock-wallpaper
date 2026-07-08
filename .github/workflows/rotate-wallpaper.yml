@@ -1,0 +1,39 @@
+name: Rotate wallpaper
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */2 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  rotate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Pick random wallpaper
+        run: python scripts/pick_wallpaper.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- wallpaper.jpg; then
+            echo "No wallpaper change to commit."
+            exit 0
+          fi
+
+          git add wallpaper.jpg
+          git commit -m "chore: rotate lock wallpaper"
+          git push

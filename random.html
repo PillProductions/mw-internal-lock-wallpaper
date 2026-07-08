@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random wallpaper redirect</title>
+</head>
+<body>
+  <script>
+    // Browser-only fallback endpoint: picks a random image and redirects.
+    // Useful for manual testing. Intune should use /wallpaper.jpg instead.
+    const images = [
+      "images/01.jpg",
+      "images/02.jpg",
+      "images/03.jpg"
+    ];
+
+    const selected = images[Math.floor(Math.random() * images.length)];
+    window.location.replace(selected + "?v=" + Date.now());
+  </script>
+</body>
+</html>
