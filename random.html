@@ -9,14 +9,27 @@
   <script>
     // Browser-only fallback endpoint: picks a random image and redirects.
     // Useful for manual testing. Intune should use /wallpaper.jpg instead.
-    const images = [
-      "images/01.jpg",
-      "images/02.jpg",
-      "images/03.jpg"
-    ];
+    async function redirectRandom() {
+      try {
+        const response = await fetch("images.json", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Could not load images.json");
+        }
 
-    const selected = images[Math.floor(Math.random() * images.length)];
-    window.location.replace(selected + "?v=" + Date.now());
+        const images = await response.json();
+        if (!Array.isArray(images) || images.length === 0) {
+          throw new Error("images.json is empty");
+        }
+
+        const selected = images[Math.floor(Math.random() * images.length)];
+        window.location.replace(selected + "?v=" + Date.now());
+      } catch (error) {
+        // Fallback to current published wallpaper if manifest is missing.
+        window.location.replace("wallpaper.jpg?v=" + Date.now());
+      }
+    }
+
+    redirectRandom();
   </script>
 </body>
 </html>
