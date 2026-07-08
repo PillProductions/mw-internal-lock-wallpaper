@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: rotate-wallpaper
+  cancel-in-progress: false
+
 jobs:
   rotate:
     runs-on: ubuntu-latest
@@ -37,4 +41,16 @@ jobs:
           fi
 
           git commit -m "chore: rotate lock wallpaper"
-          git push
+
+          # Retry with rebase in case another run pushed in the meantime.
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push rejected, rebasing and retrying (attempt $attempt)..."
+            git pull --rebase origin main
+          done
+
+          echo "Failed to push after multiple attempts."
+          exit 1
