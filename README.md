@@ -42,3 +42,4 @@ Examples:
 This is only for browser testing and not recommended for Intune policy URL usage.
 
 If you use it, keep the image list in `random.html` updated.
+
